@@ -1,5 +1,27 @@
+# Virtual environments
 venv/
+.venv/
+
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.egg-info/
+
+# Environment variables / secrets
 .env
+.env.*
+!.env.example
+
+# Testing
+.pytest_cache/
+.coverage
+
+# Jupyter
 .ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Generated vector databases
+chroma_db/
+faiss_index/
