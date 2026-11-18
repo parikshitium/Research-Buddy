@@ -15,11 +15,11 @@ class VectorStore():
     def save(self,index_path,chunks_path):
         Path(index_path).parent.mkdir(parents=True,exist_ok=True)
         Path(chunks_path).parent.mkdir(parents=True,exist_ok=True)
-        faiss.write_index(self.index,index_path)
+        faiss.write_index(self.index,str(index_path))
         with open(chunks_path,'wb') as f:
             pickle.dump(self.chunks,f)
     def load(self,index_path,chunks_path):
-        self.index = faiss.read_index(index_path)
+        self.index = faiss.read_index(str(index_path))
         with open(chunks_path,'rb') as f:
            self.chunks = pickle.load(f)
     def search(self,query_embedding,top_k=3):

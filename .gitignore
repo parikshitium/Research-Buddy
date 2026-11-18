@@ -25,3 +25,7 @@ __pycache__/
 # Generated vector databases
 chroma_db/
 faiss_index/
+
+# User uploads and generated vector store
+data/uploads/
+data/vector_store/
