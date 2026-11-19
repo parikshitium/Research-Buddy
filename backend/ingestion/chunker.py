@@ -3,9 +3,11 @@ def chunk(documents,
           overlap=50):
     chunks = []
     if chunk_size <= 0 or overlap < 0 or overlap >= chunk_size:
-        raise ValueError('Chunk size must be greater than 0,' \
-        'Overlap must not be negative,' \
-        'Overlap size must not be greater than chunk size')
+        raise ValueError(
+            'Chunk size must be greater than 0,'
+            'overlap cannot be negative and '
+            'overlap must be smaller than chunk size'
+        )
     for document in documents:
         words = document['text'].split()
         for start in range(0,len(words),chunk_size - overlap):

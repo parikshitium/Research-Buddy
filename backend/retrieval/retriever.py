@@ -1,7 +1,7 @@
-class Retriever():
+class Retriever:
     def __init__(self,embedder,vector_store):
-        self.embed = embedder
-        self.vector = vector_store
+        self.embedder = embedder
+        self.vector_store = vector_store
     def retrieve(self,query,top_k=3):
-        embedding = self.embed.embed([query])[0]
-        return self.vector.search(embedding,top_k)
+        embedding = self.embedder.embed([query])[0]
+        return self.vector_store.search(embedding,top_k)

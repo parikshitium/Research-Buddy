@@ -3,19 +3,19 @@ from dotenv import load_dotenv
 from google import  genai
 
 
-class Generator():
+class Generator:
     def __init__(self):
         load_dotenv()
         self.key = os.getenv('GEMINI_API_KEY')
         if not self.key:
-            raise ValueError('Key does not exist')
+            raise ValueError('GEMINI_API_KEY not found in environment variables')
         self.client = genai.Client(api_key=self.key)
     def generate(self,
                  prompt,
                  model='gemini-3.5-flash-lite'):
-        feed = self.client.interactions.create(
+        result = self.client.interactions.create(
             model=model,
             input=prompt
         )
-        response = feed.output_text
+        response = result.output_text
         return response
