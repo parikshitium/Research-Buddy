@@ -29,3 +29,5 @@ faiss_index/
 # User uploads and generated vector store
 data/uploads/
 data/vector_store/
+
+data/sessions/

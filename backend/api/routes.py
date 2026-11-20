@@ -1,21 +1,30 @@
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Header, HTTPException
 from pathlib import Path
-from uuid import uuid4
-from fastapi import HTTPException
+from uuid import uuid4,UUID
 from pydantic import BaseModel
 
 router = APIRouter()
 
-def configure_routes(document_pipeline,rag_pipeline):
+def configure_routes(get_session):
     @router.post('/upload')
-    async def upload_file(file: UploadFile = File(...)):
+    async def upload_file(
+        file: UploadFile = File(...),
+        session_id: str = Header(...)
+    ):
+        try:
+            doc_pipeline, _ = get_session(session_id)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail='Invalid session ID'
+            )
         extension = Path(file.filename).suffix.lower()
         if extension not in ['.pdf','.txt']:
             raise HTTPException(
                 status_code=400,
                 detail='Only PDF and TXT files are supported.'
             )
-        upload_dir = Path('data/uploads')
+        upload_dir = Path('data/sessions')/str(UUID(session_id))/'uploads'
         upload_dir.mkdir(parents=True,exist_ok=True)
         filename = f'{uuid4()}{extension}'
         file_path = upload_dir/filename
@@ -32,7 +41,7 @@ def configure_routes(document_pipeline,rag_pipeline):
             )
         file_path.write_bytes(content)
         try:
-            chunks_created = document_pipeline.process_document(
+            chunks_created = doc_pipeline.process_document(
                 file_path,
                 source_name=file.filename
             )
@@ -54,12 +63,19 @@ def configure_routes(document_pipeline,rag_pipeline):
                 detail='An unexpected error has occurred while processing'
             )
     @router.post('/ask')
-    async def ask_question(request: QuestionRequest):
-        response = rag_pipeline.answer(request.query)
-        return response
+    async def ask_question(
+        request: QuestionRequest,
+        session_id: str = Header(...)
+    ):
+        try:
+            _, rag_pipeline = get_session(session_id)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail='Invalid session ID'
+            )
+        return rag_pipeline.answer(request.query)
     return router
-
-
 class QuestionRequest(BaseModel):
     query: str
 

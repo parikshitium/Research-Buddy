@@ -37,6 +37,7 @@ if uploaded_files and st.button('Upload'):
         try:
             response = requests.post(
                 f'{API_URL}/upload',
+                headers={'session-id':st.session_state.session_id},
                 files={
                     'file':(
                         uploaded_file.name,
@@ -75,7 +76,8 @@ if query:
         try:
             response = requests.post(
                 f'{API_URL}/ask',
-                json={'query': query}
+                json={'query': query},
+                headers={'session-id':st.session_state.session_id}
             )
             response.raise_for_status()
             result = response.json()
